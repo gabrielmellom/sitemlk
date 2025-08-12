@@ -1,103 +1,242 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import Header from '@/components/Header';
+import NewsCard from '@/components/NewsCard';
+import SafeImage from '@/components/SafeImage';
+import Footer from '@/components/Footer';
+import SplashScreen from '@/components/SplashScreen';
+import Carousel from '@/components/Carousel';
+import AdsSection from '@/components/AdsSection';
+import {
+  // ⬇️ troque getNews por getNewsPaginated
+  getNewsPaginated,
+  getCarouselImages,
+  getAds,
+  getEvents,
+  type News,
+  type CarouselImage,
+  type AdItem,
+  type EventItem,
+} from '@/lib/firebase';
+import type { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
+
+// CSS do Swiper
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [news, setNews] = useState<News[]>([]);
+  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
+  const [adsData, setAdsData] = useState<AdItem[]>([]);
+  const [eventsData, setEventsData] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [showSplash, setShowSplash] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Paginação “ver mais”
+  const pageSize = 6;
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  useEffect(() => {
+    loadInitial();
+  }, []);
+
+  const loadInitial = async () => {
+    try {
+      setLoading(true);
+      // Carrega primeira “página” + demais seções em paralelo
+      const [firstPage, carouselData, adsDataFromDB, eventsDataFromDB] = await Promise.all([
+        getNewsPaginated(pageSize), // primeira página
+        getCarouselImages(),
+        getAds(),
+        getEvents(),
+      ]);
+
+      setNews(firstPage.data);
+      setLastDoc(firstPage.lastVisible);
+      setHasMore(firstPage.hasMore);
+
+      setCarouselImages(carouselData);
+      setAdsData(adsDataFromDB);
+      setEventsData(eventsDataFromDB);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMoreNews = async () => {
+    if (!hasMore || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const next = await getNewsPaginated(pageSize, lastDoc);
+      // evita duplicados caso tenha inserções durante a navegação
+      const existing = new Set(news.map(n => n.id));
+      const deduped = next.data.filter(n => !existing.has(n.id));
+      setNews(prev => [...prev, ...deduped]);
+      setLastDoc(next.lastVisible);
+      setHasMore(next.hasMore);
+    } catch (e) {
+      console.error('Erro ao carregar mais notícias:', e);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  // Converter EventItem para o formato que o Carousel espera
+  const carouselEventsData = eventsData.map(event => ({
+    id: event.id || '',
+    imageUrl: event.imageUrl,
+    title: event.title,
+    description: event.description,
+  }));
+
+  // Auto-play do carrossel principal
+  useEffect(() => {
+    if (carouselImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [carouselImages.length]);
+
+  const handleSplashComplete = () => setShowSplash(false);
+
+  // Splash
+  if (showSplash) {
+    return (
+      <SplashScreen
+        logoSrc="/logo.png"
+        logoAlt="Muleka FM Logo"
+        logoWidth={300}
+        logoHeight={300}
+        duration={3000}
+        onComplete={handleSplashComplete}
+      />
+    );
+  }
+
+  // Loading inicial
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4">Carregando...</p>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Header />
+      
+      {/* Carrossel Principal (Hero) */}
+      {carouselImages.length > 0 && (
+        <div className="relative h-[500px] w-full overflow-hidden bg-gray-900">
+          {carouselImages.map((image, index) => (
+            <div
+              key={image.id}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <SafeImage
+                src={image.imageUrl}
+                alt={image.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-8">
+                <h2 className="text-white text-4xl font-bold drop-shadow-lg">
+                  {image.title}
+                </h2>
+              </div>
+            </div>
+          ))}
+          
+          {/* Indicadores */}
+          {carouselImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              {carouselImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    index === currentSlide ? 'bg-white' : 'bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Notícias */}
+      <main className="container mx-auto px-6 py-10">
+        <h1 className="text-4xl font-bold mb-10 text-center">Últimas Notícias</h1>
+        
+        {news.length > 0 ? (
+          <>
+            <div className="flex flex-wrap gap-8 justify-center mb-10">
+              {news.map((item) => (
+                <NewsCard key={item.id} news={item} />
+              ))}
+            </div>
+
+            {/* Botão Ver mais */}
+            <div className="flex justify-center mb-16">
+              <button
+                onClick={loadMoreNews}
+                disabled={!hasMore || loadingMore}
+                className={`px-6 py-3 rounded-xl font-medium shadow-md transition
+                  ${hasMore ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}
+                `}
+              >
+                {loadingMore ? 'Carregando...' : hasMore ? 'Ver mais notícias' : 'Não há mais notícias'}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-10 mb-16">
+            <p className="text-gray-500">Nenhuma notícia disponível no momento.</p>
+          </div>
+        )}
+
+        {/* Carrossel de Eventos */}
+        {eventsData.length > 0 && (
+          <section className="mb-16">
+            <h2 className="text-3xl font-bold mb-8 text-center">Eventos e Shows</h2>
+            <div className="mx-auto px-6" style={{ maxWidth: '70rem' }}>
+              <Carousel
+                items={carouselEventsData}
+                height="h-[350px]"
+                showTitle={true}
+                showDescription={true}
+                autoPlayInterval={4000}
+              />
+            </div>
+          </section>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+      {/* Seção de Anúncios */}
+      <AdsSection 
+        ads={adsData}
+        title="Nossos Parceiros"
+        className="bg-gray-50"
+        loading={loading}
+      />
+      
+      <section>
+        <Footer />
+      </section>
+    </>
   );
 }
