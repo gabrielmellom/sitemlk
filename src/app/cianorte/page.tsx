@@ -4,9 +4,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
-import { Play, Pause, Volume2, VolumeX, Radio, MessageCircle } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
-// Defina no .env.local: NEXT_PUBLIC_MASSA_STREAM="https://SEU_LINK_AQUI"
+// Se quiser, mova para .env.local como NEXT_PUBLIC_MASSA_STREAM
 const STREAM_URL = 'https://stm01.virtualcast.com.br:8148/massacianorte';
 
 export default function MassaFMPage() {
@@ -14,7 +14,8 @@ export default function MassaFMPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState<number>(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('massafm_volume') : null;
+    if (typeof window === 'undefined') return 0.85;
+    const saved = localStorage.getItem('massafm_volume');
     return saved ? Number(saved) : 0.85;
   });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -25,7 +26,9 @@ export default function MassaFMPage() {
   }, [volume, muted]);
 
   useEffect(() => {
-    localStorage.setItem('massafm_volume', String(volume));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('massafm_volume', String(volume));
+    }
   }, [volume]);
 
   const togglePlay = async () => {
@@ -54,103 +57,128 @@ export default function MassaFMPage() {
       <Header />
 
       <main className="flex-1">
-        {/* HERO com a arte da Massa */}
+        {/* HERO */}
         <section className="relative">
           <div className="container mx-auto px-6 pt-8 pb-4">
-              <div className="relative w-full h-[180px] sm:h-[220px] md:h-[260px]">
-                <Image
-                  src="/massa.png"
-                  alt="Massa FM 96.9 - Ouça Agora"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
+            <div className="relative w-full h-[180px] sm:h-[220px] md:h-[260px] rounded-2xl overflow-hidden shadow">
+              <Image
+                src="/massa.png"
+                alt="Massa FM 96.9 - Ouça Agora"
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
+          </div>
         </section>
 
-        {/* Player */}
+        {/* Título */}
+        {/* Player + iframe lado a lado (alturas iguais) */}
         <section className="container mx-auto px-6 pb-12">
           <div className="text-center mb-8">
-          
             <h1 className="text-3xl md:text-4xl font-extrabold mt-4 text-purple-700">
               Massa FM 96.9 — ao vivo
             </h1>
             <p className="text-gray-600 mt-2">#TemCoisaBoa — 24 horas no ar 🟠🟣</p>
           </div>
 
-          <div className="max-w-3xl mx-auto">
-            <div className="relative overflow-hidden rounded-3xl bg-white/90 backdrop-blur shadow-xl border border-orange-100">
-              <div className="grid md:grid-cols-[200px,1fr]">
-                {/* bloco visual / equalizer */}
-                <div className="relative p-8 md:p-10 bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center">
-                  <div className="flex items-end gap-2 h-24">
-                    <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-1' : 'h-6'}`} />
-                    <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-2' : 'h-10'}`} />
-                    <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-3' : 'h-16'}`} />
-                    <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-4' : 'h-8'}`} />
-                  </div>
-                </div>
-
-                {/* controles */}
-                <div className="p-6 md:p-8">
-                  <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900">Massa FM 96.9</h2>
-                    <p className="text-sm text-gray-600">Tocando agora: programação ao vivo</p>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={togglePlay}
-                      className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-500 text-white shadow-lg hover:scale-105 active:scale-95 transition-transform focus:outline-none focus:ring-4 focus:ring-orange-300"
-                      aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
-                    >
-                      {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 translate-x-[1px]" />}
-                    </button>
-
-                    <div className="flex items-center gap-3 flex-1">
-                      <button
-                        onClick={toggleMute}
-                        className="p-2 rounded-lg hover:bg-gray-100 transition"
-                        aria-label={muted ? 'Ativar som' : 'Silenciar'}
-                      >
-                        {muted ? <VolumeX className="w-6 h-6 text-gray-800" /> : <Volume2 className="w-6 h-6 text-gray-800" />}
-                      </button>
-                      <input
-                        type="range"
-                        min={0}
-                        max={1}
-                        step={0.01}
-                        value={muted ? 0 : volume}
-                        onChange={(e) => {
-                          const v = Number(e.target.value);
-                          setVolume(v);
-                          if (v === 0) setMuted(true);
-                          else setMuted(false);
-                        }}
-                        className="w-full accent-orange-500"
-                        aria-label="Volume"
-                      />
+          {/* 🔧 items-stretch força as colunas a igualarem a altura da mais alta */}
+          <div className="grid md:grid-cols-2 gap-8 items-stretch">
+            {/* Player custom (ESQUERDA) */}
+            <div className="max-w-xl md:max-w-none mx-auto w-full h-full">
+              <div className="relative overflow-hidden rounded-3xl bg-white/90 backdrop-blur shadow-xl border border-orange-100 h-full flex flex-col min-h-[420px]">
+                <div className="grid md:grid-cols-[200px,1fr] flex-1">
+                  {/* equalizer */}
+                  <div className="relative p-8 md:p-10 bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center">
+                    <div className="flex items-end gap-2 h-24">
+                      <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-1' : 'h-6'}`} />
+                      <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-2' : 'h-10'}`} />
+                      <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-3' : 'h-16'}`} />
+                      <span className={`w-2 rounded bg-white/90 ${isPlaying ? 'bar bar-4' : 'h-8'}`} />
                     </div>
                   </div>
 
-                 
+                  {/* controles */}
+                  <div className="p-6 md:p-8">
+                    <div className="mb-6">
+                      <h2 className="text-xl font-semibold text-gray-900">Massa FM 96.9</h2>
+                      <p className="text-sm text-gray-600">Tocando agora: programação ao vivo</p>
+                    </div>
 
-                  {errorMsg && <p className="mt-4 text-sm text-red-600">{errorMsg}</p>}
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={togglePlay}
+                        className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-500 text-white shadow-lg hover:scale-105 active:scale-95 transition-transform focus:outline-none focus:ring-4 focus:ring-orange-300"
+                        aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
+                      >
+                        {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 translate-x-[1px]" />}
+                      </button>
+
+                      <div className="flex items-center gap-3 flex-1">
+                        <button
+                          onClick={toggleMute}
+                          className="p-2 rounded-lg hover:bg-gray-100 transition"
+                          aria-label={muted ? 'Ativar som' : 'Silenciar'}
+                        >
+                          {muted ? <VolumeX className="w-6 h-6 text-gray-800" /> : <Volume2 className="w-6 h-6 text-gray-800" />}
+                        </button>
+                        <input
+                          type="range"
+                          min={0}
+                          max={1}
+                          step={0.01}
+                          value={muted ? 0 : volume}
+                          onChange={(e) => {
+                            const v = Number(e.target.value);
+                            setVolume(v);
+                            setMuted(v === 0);
+                          }}
+                          className="w-full accent-orange-500"
+                          aria-label="Volume"
+                        />
+                      </div>
+                    </div>
+
+                    {errorMsg && <p className="mt-4 text-sm text-red-600">{errorMsg}</p>}
+                  </div>
                 </div>
-              </div>
 
-              <audio ref={audioRef} src={STREAM_URL} preload="none" />
+                <audio ref={audioRef} src={STREAM_URL} preload="none" />
+              </div>
             </div>
 
-            <p className="text-xs text-gray-500 text-center mt-4">
-              Dica: alguns navegadores bloqueiam autoplay. Toque no botão Play para iniciar.
-            </p>
+            {/* Player embed (DIREITA) */}
+            {/* Player embed (DIREITA) — sem overflow-hidden no card */}
+            <div className="w-full h-full">
+              <div className="rounded-3xl bg-white shadow-xl border border-purple-200 h-full flex flex-col min-h-[420px]">
+
+
+                {/* wrapper responsivo com “respiro” no fundo */}
+                <div className="relative w-full px-4 pb-2 flex-1 flex items-stretch">
+                  <div className="relative w-full pt-[56.25%]"> {/* 16:9 */}
+                    <iframe
+                      title="Massa FM - Player"
+                      src="https://wise-stream.mycloudstream.io/player/9stwwxzl?autoplay=true"
+                      className="absolute inset-0 w-full h-full rounded-2xl"  
+                      style={{ border: 'none' }}
+                      scrolling="no"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-500 text-center py-2">
+                  Se não iniciar, verifique o bloqueio de autoplay.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
+
       </main>
 
-      <footer className="bg-orange-500 text-white py-6 text-center text-sm">
+      <footer className="bg-[#FF9400] text-white py-6 text-center text-sm">
         © {new Date().getFullYear()} Massa FM 96.9 — Grupo MLK.
       </footer>
 

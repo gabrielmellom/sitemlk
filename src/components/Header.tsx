@@ -10,7 +10,7 @@ export default function Header() {
   return (
     <header className="text-white shadow-lg">
       {/* Seção Laranja - Logo e Título */}
-      <div className="bg-orange-400">
+      <div className="bg-[#FF9400]">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center py-4">
             <div className="flex items-center space-x-3">
@@ -29,42 +29,42 @@ export default function Header() {
           {/* Menu Desktop */}
           <div className="hidden md:block">
             <nav className="flex items-center justify-center space-x-12 py-4">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="hover:text-orange-200 transition-colors duration-200 font-medium text-lg border-b-2 border-orange-400 pb-1"
               >
                 Início
               </Link>
-              <Link 
-                href="/sobre" 
+              <Link
+                href="/sobre"
                 className="hover:text-orange-200 transition-colors duration-200 font-medium text-lg hover:border-b-2 hover:border-orange-400 pb-1"
               >
                 Sobre
               </Link>
-              <Link 
-                href="/mulekafm" 
+              <Link
+                href="/mulekafm"
                 className="hover:text-orange-200 transition-colors duration-200 font-medium text-lg hover:border-b-2 hover:border-orange-400 pb-1"
               >
                 Muleka FM
               </Link>
-              <Link 
-                href="https://lekadasorte.com.br" 
-                className="hover:text-orange-200 transition-colors duration-200 font-medium text-lg hover:border-b-2 hover:border-orange-400 pb-1"
-              >
-                Leka da Sorte
-              </Link>
-              <Link 
-                href="/cianorte" 
+              <Link
+                href="/cianorte"
                 className="hover:text-orange-200 transition-colors duration-200 font-medium text-lg hover:border-b-2 hover:border-orange-400 pb-1"
               >
                 Massa FM Cianorte
+              </Link>
+              <Link
+                href="https://lekadasorte.com.br"
+                className="hover:text-orange-200 transition-colors duration-200 font-medium text-lg hover:border-b-2 hover:border-orange-400 pb-1"
+              >
+                Leka da Sorte
               </Link>
             </nav>
           </div>
 
           {/* Botão Menu Mobile */}
           <div className="md:hidden flex justify-center py-4">
-            <button 
+            <button
               className="p-2 rounded-lg hover:bg-white/20 transition-colors"
               onClick={() => setMenuOpen(!menuOpen)}
             >
@@ -76,36 +76,36 @@ export default function Header() {
           {menuOpen && (
             <div className="md:hidden pb-4">
               <nav className="flex flex-col items-center space-y-3 border-t border-white/20 pt-4">
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   className="py-2 px-4 hover:bg-white/20 rounded-lg transition-colors font-medium"
                   onClick={() => setMenuOpen(false)}
                 >
                   Início
                 </Link>
-                <Link 
-                  href="/sobre" 
+                <Link
+                  href="/sobre"
                   className="py-2 px-4 hover:bg-white/20 rounded-lg transition-colors font-medium"
                   onClick={() => setMenuOpen(false)}
                 >
                   Sobre
                 </Link>
-                <Link 
-                  href="/noticias" 
+                <Link
+                  href="/noticias"
                   className="py-2 px-4 hover:bg-white/20 rounded-lg transition-colors font-medium"
                   onClick={() => setMenuOpen(false)}
                 >
                   Notícias
                 </Link>
-                <Link 
-                  href="/aniversariante" 
+                <Link
+                  href="/aniversariante"
                   className="py-2 px-4 hover:bg-white/20 rounded-lg transition-colors font-medium"
                   onClick={() => setMenuOpen(false)}
                 >
                   Aniversariante
                 </Link>
-                <Link 
-                  href="/videos" 
+                <Link
+                  href="/videos"
                   className="py-2 px-4 hover:bg-white/20 rounded-lg transition-colors font-medium"
                   onClick={() => setMenuOpen(false)}
                 >

@@ -149,7 +149,7 @@ export default function AdsSection({
         <div className="mt-6 text-center">
           <div className="bg-gradient-to-r from-orange-100 to-orange-50 rounded-lg p-4 border border-orange-200 max-w-lg mx-auto">
             <h3 className="text-lg font-bold text-gray-800 mb-1">
-              Quer anunciar na Muleka FM?
+              Quer anunciar com a gente?
             </h3>
             <p className="text-gray-600 text-sm mb-3">
               Alcance milhares de ouvintes todos os dias!

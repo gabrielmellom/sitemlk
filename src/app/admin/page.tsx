@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';

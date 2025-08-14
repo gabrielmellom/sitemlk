@@ -9,16 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tinymce/tinymce-react": "^6.3.0",
     "firebase": "^12.0.0",
+    "isomorphic-dompurify": "^2.26.0",
     "lucide-react": "^0.536.0",
     "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.5.2",
+    "react-quill": "^2.0.0",
     "swiper": "^11.2.10"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

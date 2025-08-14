@@ -1,140 +1,82 @@
 'use client';
 
 import Link from 'next/link';
-import { MessageCircle, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+import { MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-orange-500 text-white w-full" style={{ fontSize: '0.75rem' }}>
+    <footer className="bg-[#FF9400] text-white w-full text-[0.75rem]">
       {/* Seção principal */}
-      <div className="w-full px-4 py-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
+      <div className="w-full px-4 py-6">
+        <div
+          className="
+            max-w-6xl mx-auto 
+            grid gap-6 
+            grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+            justify-items-center lg:justify-items-start
+          "
+        >
           {/* Logo e descrição */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center mb-3" style={{ gap: '0.5rem' }}>
-              <div className="bg-white rounded-full flex items-center justify-center" style={{ width: '1.5rem', height: '1.5rem' }}>
-                <MessageCircle style={{ width: '1rem', height: '1rem' }} className="text-orange-500" />
+          <div className="w-full max-w-xs text-center lg:text-left">
+            <div className="flex items-center justify-center lg:justify-start gap-2 mb-3">
+              <div className="bg-white rounded-full flex items-center justify-center w-6 h-6">
+                <MessageCircle className="text-orange-500 w-4 h-4" />
               </div>
-              <span className="font-bold" style={{ fontSize: '1rem' }}>Portal Notícias</span>
+              <span className="font-bold text-[1rem]">Portal Notícias</span>
             </div>
-            <p className="text-orange-100 leading-relaxed mb-3 max-w-xs" style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
+
+            <p className="text-orange-100 leading-relaxed mb-3">
               Seu portal de notícias confiável, mantendo você informado sobre os acontecimentos mais importantes do dia.
             </p>
-            
-            {/* Redes sociais */}
-            <div className="flex" style={{ gap: '0.5rem' }}>
-              <a href="#" className="bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110" style={{ width: '1.5rem', height: '1.5rem' }}>
-                <Facebook style={{ width: '0.75rem', height: '0.75rem' }} />
-              </a>
-              <a href="#" className="bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110" style={{ width: '1.5rem', height: '1.5rem' }}>
-                <Instagram style={{ width: '0.75rem', height: '0.75rem' }} />
-              </a>
-              <a href="#" className="bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110" style={{ width: '1.5rem', height: '1.5rem' }}>
-                <Twitter style={{ width: '0.75rem', height: '0.75rem' }} />
-              </a>
-              <a href="#" className="bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110" style={{ width: '1.5rem', height: '1.5rem' }}>
-                <Youtube style={{ width: '0.75rem', height: '0.75rem' }} />
-              </a>
-            </div>
           </div>
 
           {/* Links rápidos */}
-          <div>
-            <h3 className="font-bold mb-2 text-white" style={{ fontSize: '0.875rem' }}>Links Rápidos</h3>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <li>
-                <Link href="/" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Início
-                </Link>
-              </li>
-              <li>
-                <Link href="/sobre" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Sobre
-                </Link>
-              </li>
-              <li>
-                <Link href="/noticias" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Notícias
-                </Link>
-              </li>
-              <li>
-                <Link href="/aniversariante" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Aniversariante
-                </Link>
-              </li>
-              <li>
-                <Link href="/videos" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Vídeos
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Categorias */}
-          <div>
-            <h3 className="font-bold mb-2 text-white" style={{ fontSize: '0.875rem' }}>Categorias</h3>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <li>
-                <Link href="/categoria/politica" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Política
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/economia" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Economia
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/esportes" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Esportes
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/cultura" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Cultura
-                </Link>
-              </li>
-              <li>
-                <Link href="/categoria/tecnologia" className="text-orange-100 hover:text-white transition-colors duration-300 flex items-center group" style={{ fontSize: '0.75rem', gap: '0.5rem' }}>
-                  <span className="bg-white rounded-full group-hover:scale-125 transition-transform" style={{ width: '0.25rem', height: '0.25rem' }}></span>
-                  Tecnologia
-                </Link>
-              </li>
+          <div className="w-full max-w-xs text-center lg:text-left">
+            <h3 className="font-bold mb-2">Links Rápidos</h3>
+            <ul className="flex flex-col gap-1">
+              {[
+                { href: '/', label: 'Início' },
+                { href: '/sobre', label: 'Sobre' },
+                { href: '/noticias', label: 'Notícias' },
+                { href: '/mulekafm', label: 'Muleka fm' },
+                { href: '/cianorte', label: 'Massa fm Cianorte' },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="text-orange-100 hover:text-white transition-colors duration-300 inline-flex items-center gap-2"
+                  >
+                    <span className="bg-white rounded-full w-1 h-1 inline-block" />
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Contato */}
-          <div>
-            <h3 className="font-bold mb-2 text-white" style={{ fontSize: '0.875rem' }}>Contato</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div className="flex items-center text-orange-100" style={{ gap: '0.5rem' }}>
-                <div className="bg-white/20 rounded-full flex items-center justify-center flex-shrink-0" style={{ width: '1rem', height: '1rem' }}>
-                  <Mail style={{ width: '0.5rem', height: '0.5rem' }} className="text-white" />
+          <div className="w-full max-w-xs text-center lg:text-left">
+            <h3 className="font-bold mb-2">Contato</h3>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-orange-100">
+                <div className="bg-white/20 rounded-full flex items-center justify-center w-4 h-4">
+                  <Mail className="w-2 h-2 text-white" />
                 </div>
-                <span style={{ fontSize: '0.75rem', wordBreak: 'break-all' }}>agencia@mlk.digital</span>
+                <span className="break-all">agencia@mlk.digital</span>
               </div>
-              <div className="flex items-center text-orange-100" style={{ gap: '0.5rem' }}>
-                <div className="bg-white/20 rounded-full flex items-center justify-center flex-shrink-0" style={{ width: '1rem', height: '1rem' }}>
-                  <Phone style={{ width: '0.5rem', height: '0.5rem' }} className="text-white" />
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-orange-100">
+                <div className="bg-white/20 rounded-full flex items-center justify-center w-4 h-4">
+                  <Phone className="w-2 h-2 text-white" />
                 </div>
-                <span style={{ fontSize: '0.75rem' }}>(44) 98418-0021</span>
+                <span>(44) 98418-0021</span>
               </div>
-              <div className="flex items-start text-orange-100" style={{ gap: '0.5rem' }}>
-                <div className="bg-white/20 rounded-full flex items-center justify-center flex-shrink-0" style={{ width: '1rem', height: '1rem', marginTop: '0.125rem' }}>
-                  <MapPin style={{ width: '0.5rem', height: '0.5rem' }} className="text-white" />
+              <div className="flex items-start justify-center lg:justify-start gap-2 text-orange-100">
+                <div className="bg-white/20 rounded-full flex items-center justify-center w-4 h-4 mt-[2px]">
+                  <MapPin className="w-2 h-2 text-white" />
                 </div>
-                <span style={{ fontSize: '0.75rem', lineHeight: '1.2' }}>
-                  Biguaçu, Santa Catarina<br />
+                <span className="leading-snug">
+                  paraíso do norte, paraná
+                  <br />
                   Brasil
                 </span>
               </div>
@@ -144,15 +86,15 @@ export default function Footer() {
       </div>
 
       {/* Linha separadora */}
-      <div className="border-t border-orange-300/30"></div>
+      <div className="border-t border-orange-300/30" />
 
       {/* Copyright */}
-      <div className="w-full px-4" style={{ paddingTop: '0.5rem', paddingBottom: '0.5rem' }}>
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center" style={{ gap: '0.25rem' }}>
-          <p className="text-orange-100" style={{ fontSize: '0.75rem' }}>
+      <div className="w-full px-4 py-2">
+        <div className="max-w-6xl mx-auto flex flex-col items-center gap-2 text-center">
+          <p className="text-orange-100">
             © 2025 Portal Notícias. Todos os direitos reservados.
           </p>
-          <div className="flex" style={{ gap: '0.75rem', fontSize: '0.75rem' }}>
+          <div className="flex gap-3">
             <Link href="/politica-privacidade" className="text-orange-100 hover:text-white transition-colors">
               Política de Privacidade
             </Link>

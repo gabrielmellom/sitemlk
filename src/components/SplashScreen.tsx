@@ -49,7 +49,7 @@ export default function SplashScreen({
         transition-transform duration-800 ease-in-out
         ${isAnimating ? '-translate-y-full' : 'translate-y-0'}
       `}
-      style={{ backgroundColor: '#FFA200' }} // Cor laranja mais vibrante
+      style={{ backgroundColor: '#FF9400' }} // Cor laranja mais vibrante
     >
       <div className="flex flex-col items-center">
         <div className="animate-bounce">
