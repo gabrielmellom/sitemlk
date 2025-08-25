@@ -9,7 +9,6 @@ import SplashScreen from '@/components/SplashScreen';
 import Carousel from '@/components/Carousel';
 import AdsSection from '@/components/AdsSection';
 import {
-  // ⬇️ troque getNews por getNewsPaginated
   getNewsPaginated,
   getCarouselImages,
   getAds,
@@ -35,7 +34,7 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showSplash, setShowSplash] = useState(true);
 
-  // Paginação “ver mais”
+  // Paginação "ver mais"
   const pageSize = 6;
   const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -45,10 +44,43 @@ export default function Home() {
     loadInitial();
   }, []);
 
+  // Configuração do chatbot quando o componente monta
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const iframe = document.getElementById('chatbotIframe') as HTMLIFrameElement;
+      if (!iframe) return;
+
+      switch (event.data) {
+        case 'openChatbot':
+          iframe.style.width = '420px';
+          iframe.style.height = '800px';
+          break;
+        case 'closeChatbot':
+          iframe.style.width = '100px';
+          iframe.style.height = '100px';
+          break;
+        case 'maximizeChatbot':
+          iframe.style.width = '500px';
+          iframe.style.height = '800px';
+          break;
+        case 'minimizeChatbot':
+          iframe.style.width = '420px';
+          iframe.style.height = '800px';
+          break;
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
   const loadInitial = async () => {
     try {
       setLoading(true);
-      // Carrega primeira “página” + demais seções em paralelo
+      // Carrega primeira "página" + demais seções em paralelo
       const [firstPage, carouselData, adsDataFromDB, eventsDataFromDB] = await Promise.all([
         getNewsPaginated(pageSize), // primeira página
         getCarouselImages(),
@@ -137,7 +169,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      
+
       {/* Carrossel Principal (Hero) */}
       {carouselImages.length > 0 && (
         <div className="relative h-[500px] w-full overflow-hidden bg-gray-900">
@@ -160,7 +192,7 @@ export default function Home() {
               </div>
             </div>
           ))}
-          
+
           {/* Indicadores */}
           {carouselImages.length > 1 && (
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
@@ -178,10 +210,29 @@ export default function Home() {
         </div>
       )}
 
+      {/* Chatbot iframe */}
+      <iframe
+        id="chatbotIframe"
+        src="https://admin.toolzz.ai/embed/6ae42909-e9b5-47c4-9c3a-bf858d45111c"
+        width="100"
+        height="100"
+        style={{
+          position: 'fixed',
+          bottom: '15px',
+          right: '15px',
+          border: 'none',
+          borderRadius: '10px',
+          zIndex: 99,
+          background: 'transparent',
+        }}
+        allow="microphone"
+        title="Chatbot"
+      />
+
       {/* Notícias */}
       <main className="container mx-auto px-6 py-10">
         <h1 className="text-4xl font-bold mb-10 text-center">Últimas Notícias</h1>
-        
+
         {news.length > 0 ? (
           <>
             <div className="flex flex-wrap gap-8 justify-center mb-10">
@@ -195,9 +246,11 @@ export default function Home() {
               <button
                 onClick={loadMoreNews}
                 disabled={!hasMore || loadingMore}
-                className={`px-6 py-3 rounded-xl font-medium shadow-md transition
-                  ${hasMore ? 'bg-purple-600 text-white hover:bg-purple-700' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}
-                `}
+                className={`px-6 py-3 rounded-xl font-medium shadow-md transition ${
+                  hasMore
+                    ? 'bg-purple-600 text-white hover:bg-purple-700'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                }`}
               >
                 {loadingMore ? 'Carregando...' : hasMore ? 'Ver mais notícias' : 'Não há mais notícias'}
               </button>
@@ -227,16 +280,14 @@ export default function Home() {
       </main>
 
       {/* Seção de Anúncios */}
-      <AdsSection 
+      <AdsSection
         ads={adsData}
         title="Nossos Parceiros"
         className="bg-gray-50"
         loading={loading}
       />
-      
-      <section>
-        <Footer />
-      </section>
+
+      <Footer />
     </>
   );
 }
