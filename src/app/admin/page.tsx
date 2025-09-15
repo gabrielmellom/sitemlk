@@ -1,7 +1,5 @@
 'use client';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
-
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -29,21 +27,27 @@ import {
   addEvent,
   updateEvent,
   deleteEvent,
+  // Team
+  getTeamMembers,
+  addTeamMember,
+  updateTeamMember,
+  deleteTeamMember,
   // Types
   News,
   CarouselImage,
   AdItem,
   EventItem,
+  TeamMember,
 } from '@/lib/firebase';
 
-import { Plus, Edit, Trash2, Image as ImageIcon, FileText, LogOut, ExternalLink, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2, Image as ImageIcon, FileText, LogOut, ExternalLink, Calendar, Users } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Admin() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'news' | 'carousel' | 'ads' | 'events'>('news');
+  const [activeTab, setActiveTab] = useState<'news' | 'carousel' | 'ads' | 'events' | 'team'>('news');
 
   // ===== Notícias =====
   const [news, setNews] = useState<News[]>([]);
@@ -91,6 +95,16 @@ export default function Admin() {
     endsAt: '',   // yyyy-mm-dd
   });
 
+  // ===== Equipe (Sobre Nós) =====
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [showTeamForm, setShowTeamForm] = useState(false);
+  const [editingTeamMember, setEditingTeamMember] = useState<TeamMember | null>(null);
+  const [teamForm, setTeamForm] = useState({
+    nome: '',
+    cargo: '',
+    imageFile: null as File | null,
+  });
+
   // ===== Auth =====
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -106,16 +120,18 @@ export default function Admin() {
   }, [router]);
 
   const loadData = async () => {
-    const [newsData, carouselData, adsData, eventsData] = await Promise.all([
+    const [newsData, carouselData, adsData, eventsData, teamData] = await Promise.all([
       getNews(false),
       getCarouselImages(),
       getAds(),
       getEvents(),
+      getTeamMembers(),
     ]);
     setNews(newsData);
     setCarouselImages(carouselData);
     setAds(adsData);
     setEvents(eventsData);
+    setTeamMembers(teamData);
   };
 
   const handleLogout = async () => {
@@ -340,7 +356,6 @@ export default function Admin() {
   const handleEditEvent = (ev: EventItem) => {
     const toISO = (v: any) => {
       if (!v) return '';
-      // cobre Date, string ISO e Timestamp do Firestore
       if (typeof v === 'string') return v.slice(0, 10);
       const date = v?.seconds ? new Date(v.seconds * 1000) : new Date(v);
       return isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
@@ -359,7 +374,63 @@ export default function Admin() {
     setShowEventsForm(true);
   };
 
-  // Continua na Parte 2...// Continuação da Parte 1...
+  // ===== Handlers: Equipe =====
+  const handleTeamSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      let imagem = editingTeamMember?.imagem || '';
+      if (teamForm.imageFile) {
+        imagem = await uploadImage(teamForm.imageFile, 'team');
+      }
+
+      const teamData = {
+        nome: teamForm.nome,
+        cargo: teamForm.cargo,
+        imagem,
+        ordem: teamMembers.length,
+      };
+
+      if (editingTeamMember?.id) {
+        await updateTeamMember(editingTeamMember.id, teamData);
+        toast.success('Membro atualizado!');
+      } else {
+        await addTeamMember(teamData);
+        toast.success('Membro adicionado!');
+      }
+
+      setShowTeamForm(false);
+      setEditingTeamMember(null);
+      setTeamForm({ nome: '', cargo: '', imageFile: null });
+      loadData();
+    } catch (error) {
+      toast.error('Erro ao salvar membro da equipe');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTeamMember = async (id: string) => {
+    if (!confirm('Tem certeza que deseja excluir este membro?')) return;
+    try {
+      await deleteTeamMember(id);
+      toast.success('Membro excluído!');
+      loadData();
+    } catch (error) {
+      toast.error('Erro ao excluir membro');
+    }
+  };
+
+  const handleEditTeamMember = (member: TeamMember) => {
+    setEditingTeamMember(member);
+    setTeamForm({
+      nome: member.nome,
+      cargo: member.cargo,
+      imageFile: null,
+    });
+    setShowTeamForm(true);
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Carregando...</div>;
@@ -411,10 +482,17 @@ export default function Admin() {
             <Calendar size={20} />
             Shows & Eventos
           </button>
+          <button
+            onClick={() => setActiveTab('team')}
+            className={`flex items-center gap-2 px-4 py-2 rounded ${activeTab === 'team' ? 'bg-green-600 text-white' : 'bg-white'}`}
+          >
+            <Users size={20} />
+            Equipe
+          </button>
         </div>
 
         {/* ===== Conteúdos ===== */}
-        {activeTab === 'news' ? (
+        {activeTab === 'news' && (
           // ------- Notícias -------
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -521,7 +599,9 @@ export default function Admin() {
               ))}
             </div>
           </div>
-        ) : activeTab === 'carousel' ? (
+        )}
+
+        {activeTab === 'carousel' && (
           // ------- Carrossel -------
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -584,7 +664,9 @@ export default function Admin() {
               ))}
             </div>
           </div>
-        ) : activeTab === 'ads' ? (
+        )}
+
+        {activeTab === 'ads' && (
           // ------- Anúncios -------
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -706,7 +788,9 @@ export default function Admin() {
               </div>
             )}
           </div>
-        ) : (
+        )}
+
+        {activeTab === 'events' && (
           // ------- Eventos -------
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -826,7 +910,7 @@ export default function Admin() {
                   <div className="p-4">
                     <h3 className="font-semibold mb-1">{ev.title}</h3>
                     <p className="text-sm text-gray-600 mb-2 line-clamp-2">{ev.description}</p>
-                    
+
                     {/* Datas do evento */}
                     {(ev.startsAt || ev.endsAt) && (
                       <div className="text-xs text-gray-500 mb-2">
@@ -838,7 +922,7 @@ export default function Admin() {
                         )}
                       </div>
                     )}
-                    
+
                     <div className="flex justify-between items-center">
                       <span className="text-xs bg-gray-200 px-2 py-1 rounded">Ordem: {ev.order ?? 0}</span>
                       <div className="flex gap-2">
@@ -860,6 +944,107 @@ export default function Admin() {
                 <p className="text-gray-500 mb-4">Nenhum evento cadastrado</p>
                 <button onClick={() => setShowEventsForm(true)} className="bg-purple-600 text-white px-6 py-3 rounded hover:bg-purple-700">
                   Criar primeiro evento
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'team' && (
+          // ------- Equipe (Sobre Nós) -------
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Equipe</h2>
+              <button
+                onClick={() => {
+                  setEditingTeamMember(null);
+                  setTeamForm({ nome: '', cargo: '', imageFile: null });
+                  setShowTeamForm(true);
+                }}
+                className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-700"
+              >
+                <Plus size={20} />
+                Novo Membro
+              </button>
+            </div>
+
+            {showTeamForm && (
+              <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h3 className="text-xl font-bold mb-4">
+                  {editingTeamMember ? 'Editar Membro da Equipe' : 'Novo Membro da Equipe'}
+                </h3>
+                <form onSubmit={handleTeamSubmit} className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Nome completo"
+                    required
+                    className="w-full px-3 py-2 border rounded"
+                    value={teamForm.nome}
+                    onChange={(e) => setTeamForm({ ...teamForm, nome: e.target.value })}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Cargo/função"
+                    required
+                    className="w-full px-3 py-2 border rounded"
+                    value={teamForm.cargo}
+                    onChange={(e) => setTeamForm({ ...teamForm, cargo: e.target.value })}
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setTeamForm({ ...teamForm, imageFile: e.target.files?.[0] || null })}
+                    className="w-full px-3 py-2 border rounded"
+                    required={!editingTeamMember}
+                  />
+                  {editingTeamMember && <p className="text-sm text-gray-500">Deixe vazio para manter a imagem atual</p>}
+
+                  <div className="flex gap-4">
+                    <button type="submit" disabled={loading} className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                      {loading ? 'Salvando...' : 'Salvar'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowTeamForm(false);
+                        setEditingTeamMember(null);
+                      }}
+                      className="bg-gray-300 px-6 py-2 rounded hover:bg-gray-400"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamMembers.map((member) => (
+                <div key={member.id} className="bg-white rounded-lg shadow overflow-hidden">
+                  <div className="relative w-full h-[250px]">
+                    <Image src={member.imagem} alt={member.nome} fill sizes="100vw" className="object-cover" />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg">{member.nome}</h3>
+                    <p className="text-gray-600">{member.cargo}</p>
+                    <div className="flex justify-end gap-2 mt-4">
+                      <button onClick={() => handleEditTeamMember(member)} className="p-2 text-blue-600 hover:bg-blue-100 rounded">
+                        <Edit size={16} />
+                      </button>
+                      <button onClick={() => member.id && handleDeleteTeamMember(member.id)} className="p-2 text-red-600 hover:bg-red-100 rounded">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {teamMembers.length === 0 && (
+              <div className="text-center py-10">
+                <p className="text-gray-500 mb-4">Nenhum membro da equipe cadastrado</p>
+                <button onClick={() => setShowTeamForm(true)} className="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">
+                  Adicionar primeiro membro
                 </button>
               </div>
             )}

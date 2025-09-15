@@ -148,7 +148,7 @@ export default function Home() {
         logoAlt="Muleka FM Logo"
         logoWidth={300}
         logoHeight={300}
-        duration={3000}
+        duration={1300}
         onComplete={handleSplashComplete}
       />
     );

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Menu, X, MessageCircle } from 'lucide-react';
-import { useState } from 'react';
+import Link from "next/link";
+import { Menu, X, MessageCircle } from "lucide-react";
+import { useState } from "react";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -10,21 +10,26 @@ export default function Header() {
   return (
     <header className="text-white shadow-lg">
       {/* Seção Laranja - Logo e Título */}
-      <div className="bg-[#FF9400]">
+      <div className="bg-[#f6a719]">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center py-4">
-            <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-center py-1">
+            <div className="flex items-center space-x-6">
               <div className="">
-                <img src="/logo.png" width={40} alt="" />
+                <img src="/logo.png" width={90} alt="" />
               </div>
-              <span className="text-3xl font-bold">Portal de notíciais MLK</span>
+              <span className="text-3xl font-bold">
+                Grupo MLK
+              </span>
+              <div className="flex items-center space-x-40">
+                  <img src="/logo.png" width={90} alt="" />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Seção Roxa - Menu de Navegação */}
-      <div className="bg-purple-600">
+      <div style={{ backgroundColor: "#72227f" }}>
         <div className="container mx-auto px-4">
           {/* Menu Desktop */}
           <div className="hidden md:block">

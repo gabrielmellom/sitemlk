@@ -364,3 +364,62 @@ export const deleteEvent = async (id: string): Promise<void> => {
     throw error;
   }
 };
+// ======= EQUIPE (SOBRE NÓS) =======
+// Adicione estas interfaces e funções ao seu arquivo lib/firebase.ts
+
+// Interface para TeamMember
+export interface TeamMember {
+  id?: string;
+  nome: string;
+  cargo: string;
+  imagem: string;
+}
+
+// Buscar todos os membros da equipe
+export const getTeamMembers = async (): Promise<TeamMember[]> => {
+  try {
+    const teamCollection = collection(db, 'sobrenos');
+    const teamSnapshot = await getDocs(teamCollection);
+    
+    return teamSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as TeamMember));
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    return [];
+  }
+};
+
+// Adicionar novo membro
+export const addTeamMember = async (memberData: Omit<TeamMember, 'id'>): Promise<void> => {
+  try {
+    const teamCollection = collection(db, 'sobrenos');
+    await addDoc(teamCollection, memberData);
+  } catch (error) {
+    console.error('Error adding team member:', error);
+    throw error;
+  }
+};
+
+// Atualizar membro existente
+export const updateTeamMember = async (id: string, memberData: Partial<TeamMember>): Promise<void> => {
+  try {
+    const memberRef = doc(db, 'sobrenos', id);
+    await updateDoc(memberRef, memberData);
+  } catch (error) {
+    console.error('Error updating team member:', error);
+    throw error;
+  }
+};
+
+// Deletar membro
+export const deleteTeamMember = async (id: string): Promise<void> => {
+  try {
+    const memberRef = doc(db, 'sobrenos', id);
+    await deleteDoc(memberRef);
+  } catch (error) {
+    console.error('Error deleting team member:', error);
+    throw error;
+  }
+};

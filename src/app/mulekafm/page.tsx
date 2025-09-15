@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import Social from '@/components/socialdinamicomlk';
 
 // Se quiser, mova para .env.local como NEXT_PUBLIC_MASSA_STREAM
 const STREAM_URL = 'https://ice.fabricahost.com.br/mulekafmpr';
@@ -57,7 +58,7 @@ export default function MassaFMPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-orange-200 via-white to-purple-100">
       <Header />
-
+      <Social/>
       <main className="flex-1">
         {/* HERO */}
         <section className="relative">

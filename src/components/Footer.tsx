@@ -5,7 +5,7 @@ import { MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#FF9400] text-white w-full text-[0.75rem]">
+    <footer className="bg-[#f6a719] text-white w-full text-[0.75rem]">
       {/* Seção principal */}
       <div className="w-full px-4 py-6">
         <div
