@@ -56,6 +56,7 @@ export default function NewsAdmin({ user }: NewsAdminProps) {
         author: user?.email || 'Admin',
         published: true,
         createdAt: editing?.createdAt || new Date(),
+        news: '',
       };
 
       if (editing?.id) {
