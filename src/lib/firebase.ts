@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+
 import { 
   getFirestore, 
   collection, 
@@ -13,14 +14,14 @@ import {
   orderBy, 
   where,
   serverTimestamp,
-  // 👇 novos imports para paginação/contagem
+  Timestamp, // <- Adicione esta linha se não estiver
   limit,
   startAfter,
   getCountFromServer,
   type QueryDocumentSnapshot,
   type DocumentData,
 } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: "AIzaSyAHIX6b1ykA2pAXdVKFj-VUg8beR-utU6s",
@@ -48,6 +49,7 @@ export interface News {
   author: string;
   createdAt: any;
   published: boolean;
+  news:string,
 }
 
 export interface CarouselImage {
@@ -421,5 +423,125 @@ export const deleteTeamMember = async (id: string): Promise<void> => {
   } catch (error) {
     console.error('Error deleting team member:', error);
     throw error;
+  }
+};// Adicione essas funções no seu arquivo firebase.ts
+
+
+// Interface Banner
+export interface Banner {
+  id?: string;
+  titulo: string;
+  link: string;
+  imagem: string;
+  ativo: boolean;
+  ordem: number;
+  tamanho: 'grande' | 'pequeno';
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+// Converter timestamp do Firebase para Date
+const convertTimestamp = (timestamp: any): Date => {
+  if (timestamp?.toDate) {
+    return timestamp.toDate();
+  }
+  if (timestamp?.seconds) {
+    return new Date(timestamp.seconds * 1000);
+  }
+  return timestamp instanceof Date ? timestamp : new Date(timestamp);
+};
+
+// Obter todos os banners
+export const getBanners = async (): Promise<Banner[]> => {
+  try {
+    const bannersRef = collection(db, 'banners');
+    const q = query(bannersRef, orderBy('ordem', 'asc'));
+    const querySnapshot = await getDocs(q);
+    
+    const banners: Banner[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      banners.push({
+        id: doc.id,
+        titulo: data.titulo || '',
+        link: data.link || '',
+        imagem: data.imagem || '',
+        ativo: data.ativo ?? true,
+        ordem: data.ordem || 0,
+        tamanho: data.tamanho || 'pequeno',
+        createdAt: data.createdAt ? convertTimestamp(data.createdAt) : new Date(),
+        updatedAt: data.updatedAt ? convertTimestamp(data.updatedAt) : new Date(),
+      });
+    });
+    
+    return banners;
+  } catch (error) {
+    console.error('Erro ao buscar banners:', error);
+    return [];
+  }
+};
+
+// Adicionar novo banner
+export const addBanner = async (banner: Omit<Banner, 'id'>): Promise<void> => {
+  try {
+    const bannersRef = collection(db, 'banners');
+    const bannerData = {
+      titulo: banner.titulo,
+      link: banner.link,
+      imagem: banner.imagem,
+      ativo: banner.ativo,
+      ordem: banner.ordem,
+      tamanho: banner.tamanho,
+      createdAt: Timestamp.fromDate(banner.createdAt || new Date()),
+      updatedAt: Timestamp.fromDate(banner.updatedAt || new Date()),
+    };
+    
+    await addDoc(bannersRef, bannerData);
+  } catch (error) {
+    console.error('Erro ao adicionar banner:', error);
+    throw error;
+  }
+};
+
+// Atualizar banner existente
+export const updateBanner = async (id: string, banner: Partial<Banner>): Promise<void> => {
+  try {
+    const bannerRef = doc(db, 'banners', id);
+    const updateData: any = {
+      ...banner,
+      updatedAt: Timestamp.fromDate(new Date()),
+    };
+    
+    // Converter datas para Timestamp se existirem
+    if (banner.createdAt) {
+      updateData.createdAt = Timestamp.fromDate(banner.createdAt);
+    }
+    
+    await updateDoc(bannerRef, updateData);
+  } catch (error) {
+    console.error('Erro ao atualizar banner:', error);
+    throw error;
+  }
+};
+
+// Deletar banner
+export const deleteBanner = async (id: string): Promise<void> => {
+  try {
+    const bannerRef = doc(db, 'banners', id);
+    await deleteDoc(bannerRef);
+  } catch (error) {
+    console.error('Erro ao deletar banner:', error);
+    throw error;
+  }
+};
+
+// Função auxiliar para obter apenas banners ativos (para usar na página pública)
+export const getActiveBanners = async (): Promise<Banner[]> => {
+  try {
+    const allBanners = await getBanners();
+    return allBanners.filter(banner => banner.ativo);
+  } catch (error) {
+    console.error('Erro ao buscar banners ativos:', error);
+    return [];
   }
 };
