@@ -58,14 +58,14 @@ export default function Header() {
               href="/mulekafm"
               className="relative group py-2 px-4 font-medium text-lg transition-all duration-300 hover:text-[#f6a719]"
             >
-              Muleka FM
+              Massa FM Paranavaí
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#f6a719] transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <Link
               href="/cianorte"
               className="relative group py-2 px-4 font-medium text-lg transition-all duration-300 hover:text-[#f6a719]"
             >
-              Massa FM
+              Massa FM Cianorte
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#f6a719] transition-all duration-300 group-hover:w-full"></span>
             </Link>
             <Link
@@ -126,7 +126,7 @@ export default function Header() {
                 onClick={() => setMenuOpen(false)}
               >
                 <span className="w-1 h-6 bg-[#f6a719] rounded-full mr-3"></span>
-                Muleka FM
+                Massa FM Paranavaí
               </Link>
               <Link
                 href="/cianorte"

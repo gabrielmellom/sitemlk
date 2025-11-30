@@ -245,7 +245,7 @@ export default function Home() {
       <Social/>
       {/* Carrossel Principal (Hero) */}
       {carouselImages.length > 0 && (
-        <div className="relative h-[500px] w-full overflow-hidden bg-gray-900 mt-22">
+        <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] w-full overflow-hidden bg-gray-900 mt-16 sm:mt-20 md:mt-22">
           {carouselImages.map((image, index) => (
             <div
               key={image.id}
@@ -257,8 +257,8 @@ export default function Home() {
                 alt={image.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-8">
-                <h2 className="text-white text-4xl font-bold drop-shadow-lg">
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 sm:p-6 md:p-8">
+                <h2 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold drop-shadow-lg">
                   {image.title}
                 </h2>
               </div>
@@ -301,14 +301,14 @@ export default function Home() {
       />
 
       {/* ✅ SEÇÃO DE NOTÍCIAS CORRIGIDA ✅ */}
-      <main className="container mx-auto px-6 py-10">
+      <main className="w-full px-4 sm:px-6 lg:px-8 py-8 md:py-10">
   {/* Título da seção */}
-  <div className="text-center mb-12">
-    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent mb-4">
+  <div className="text-center mb-8 md:mb-12 max-w-4xl mx-auto">
+    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-500 to-purple-600 bg-clip-text text-transparent mb-3 md:mb-4 px-4">
       Últimas Notícias
     </h1>
-    <div className="w-24 h-1 bg-gradient-to-r from-orange-500 to-purple-600 mx-auto rounded-full"></div>
-    <p className="text-gray-600 mt-4 text-lg">
+    <div className="w-20 md:w-24 h-1 bg-gradient-to-r from-orange-500 to-purple-600 mx-auto rounded-full"></div>
+    <p className="text-gray-600 mt-3 md:mt-4 text-base md:text-lg px-4">
       Fique por dentro de tudo que acontece na região
     </p>
   </div>
@@ -316,18 +316,18 @@ export default function Home() {
   {news.length > 0 ? (
     <>
       {/* TODAS AS NOTÍCIAS USANDO O NEWSCARD PADRÃO */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center mb-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-10">
         {news.map((item) => (
           <NewsCard key={item.id} news={item} />
         ))}
       </div>
 
       {/* Botão Ver mais */}
-      <div className="flex justify-center mb-16">
+      <div className="flex justify-center mb-12 md:mb-16 px-4">
         <button
           onClick={loadMoreNews}
           disabled={!hasMore || loadingMore}
-          className="bg-gradient-to-r from-orange-500 to-purple-600 text-white px-8 py-4 rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className="bg-gradient-to-r from-orange-500 to-purple-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm sm:text-base"
         >
           {loadingMore ? (
             <div className="flex items-center gap-3">
@@ -356,11 +356,11 @@ export default function Home() {
 
       {/* Resto do seu código permanece igual */}
       {eventsData.length > 0 && (
-        <section className="w-full py-12 " style={{ backgroundColor: '#E7E7E7FF' }}>
-          <h2 className="text-3xl font-bold mb-8 text-center text-black">
+        <section className="w-full py-8 md:py-12 px-4" style={{ backgroundColor: '#E7E7E7FF' }}>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-6 md:mb-8 text-center text-black">
             Eventos e Shows
           </h2>
-          <div className="mx-auto px-6" style={{ maxWidth: '70rem' }}>
+          <div className="mx-auto px-2 sm:px-4 md:px-6" style={{ maxWidth: '70rem' }}>
             <Carousel
               items={carouselEventsData}
               height="h-[350px]"
@@ -372,7 +372,7 @@ export default function Home() {
         </section>
       )}
 
-      <div className="w-full py-12" style={{ backgroundColor: '#E7E7E7FF'}}>
+      <div className="w-full py-8 md:py-12 px-4" style={{ backgroundColor: '#E7E7E7FF'}}>
         <AdsSection
           ads={adsData}
           title="Nossos Parceiros"

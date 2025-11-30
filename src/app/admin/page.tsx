@@ -70,7 +70,7 @@ export default function Admin() {
       <header className="bg-blue-900 text-white p-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold">Painel Admin - Muleka FM</h1>
+            <h1 className="text-2xl font-bold">Painel Admin - Grupo MLK</h1>
             <p className="text-blue-200 text-sm">Bem-vindo, {user?.email}</p>
           </div>
           <button 

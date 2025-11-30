@@ -6,6 +6,7 @@ import SafeImage from '@/components/SafeImage';
 interface CarouselItem {
   id: string;
   imageUrl: string;
+  imageUrlMobile?: string;
   title: string;
   description?: string;
 }
@@ -71,11 +72,33 @@ export default function Carousel({
             index === currentSlide ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <SafeImage
-            src={item.imageUrl}
-            alt={item.title}
-            className="w-full h-full object-cover"
-          />
+          {/* Se tem imagem mobile, mostra ambas com display condicional */}
+          {item.imageUrlMobile ? (
+            <>
+              {/* Imagem Desktop - esconde em mobile */}
+              <div className="hidden md:block w-full h-full">
+                <SafeImage
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Imagem Mobile - esconde em desktop */}
+              <div className="block md:hidden w-full h-full">
+                <SafeImage
+                  src={item.imageUrlMobile}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </>
+          ) : (
+            <SafeImage
+              src={item.imageUrl}
+              alt={item.title}
+              className="w-full h-full object-cover"
+            />
+          )}
           
           {/* Overlay com informações */}
           {(showTitle || showDescription) && (

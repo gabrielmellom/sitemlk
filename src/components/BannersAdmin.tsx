@@ -18,6 +18,7 @@ interface Banner {
   titulo: string;
   link: string;
   imagem: string;
+  imagemMobile?: string; // Imagem para mobile (opcional)
   ativo: boolean;
   ordem: number;
   tamanho: 'grande' | 'pequeno'; // grande = banner principal, pequeno = banners menores
@@ -34,6 +35,7 @@ export default function BannersAdmin() {
     titulo: '',
     link: '',
     imageFile: null as File | null,
+    imageMobileFile: null as File | null,
     ativo: true,
     ordem: 0,
     tamanho: 'pequeno' as 'grande' | 'pequeno',
@@ -58,14 +60,21 @@ export default function BannersAdmin() {
 
     try {
       let imagem = editing?.imagem || '';
+      let imagemMobile = editing?.imagemMobile || undefined;
+      
       if (form.imageFile) {
         imagem = await uploadImage(form.imageFile, 'banners');
+      }
+
+      if (form.imageMobileFile) {
+        imagemMobile = await uploadImage(form.imageMobileFile, 'banners');
       }
 
       const bannerData = {
         titulo: form.titulo,
         link: form.link,
         imagem,
+        imagemMobile,
         ativo: form.ativo,
         ordem: form.ordem,
         tamanho: form.tamanho,
@@ -107,6 +116,7 @@ export default function BannersAdmin() {
       titulo: banner.titulo,
       link: banner.link,
       imageFile: null,
+      imageMobileFile: null,
       ativo: banner.ativo,
       ordem: banner.ordem,
       tamanho: banner.tamanho,
@@ -117,7 +127,7 @@ export default function BannersAdmin() {
   const resetForm = () => {
     setShowForm(false);
     setEditing(null);
-    setForm({ titulo: '', link: '', imageFile: null, ativo: true, ordem: 0, tamanho: 'pequeno' });
+    setForm({ titulo: '', link: '', imageFile: null, imageMobileFile: null, ativo: true, ordem: 0, tamanho: 'pequeno' });
   };
 
   const bannersPequenos = banners.filter(b => b.tamanho === 'pequeno');
@@ -206,14 +216,67 @@ export default function BannersAdmin() {
               <span>Banner ativo</span>
             </label>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setForm({ ...form, imageFile: e.target.files?.[0] || null })}
-              className="w-full px-3 py-2 border rounded"
-              required={!editing}
-            />
-            {editing && <p className="text-sm text-gray-500">Deixe vazio para manter a imagem atual</p>}
+            {/* Upload Imagem Desktop */}
+            <div className="border-2 border-dashed border-blue-300 rounded-lg p-4 bg-blue-50">
+              <label className="block text-sm font-semibold mb-2 text-blue-800">
+                📱 Imagem Desktop/Tablet
+                {form.tamanho === 'grande' && (
+                  <span className="ml-2 text-xs font-normal text-blue-600">
+                    (Recomendado: 1200x600px - formato paisagem)
+                  </span>
+                )}
+                {form.tamanho === 'pequeno' && (
+                  <span className="ml-2 text-xs font-normal text-blue-600">
+                    (Recomendado: 400x400px - formato quadrado)
+                  </span>
+                )}
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setForm({ ...form, imageFile: e.target.files?.[0] || null })}
+                className="w-full px-3 py-2 border rounded bg-white"
+                required={!editing}
+              />
+              {editing?.imagem && (
+                <p className="text-xs text-gray-600 mt-1">
+                  ✅ Imagem atual: {editing.imagem.split('/').pop()?.substring(0, 30)}...
+                </p>
+              )}
+            </div>
+
+            {/* Upload Imagem Mobile */}
+            <div className="border-2 border-dashed border-purple-300 rounded-lg p-4 bg-purple-50">
+              <label className="block text-sm font-semibold mb-2 text-purple-800">
+                📱 Imagem Mobile (Opcional)
+                {form.tamanho === 'grande' && (
+                  <span className="ml-2 text-xs font-normal text-purple-600">
+                    (Recomendado: 800x800px - formato quadrado para mobile)
+                  </span>
+                )}
+                {form.tamanho === 'pequeno' && (
+                  <span className="ml-2 text-xs font-normal text-purple-600">
+                    (Recomendado: 400x400px - formato quadrado)
+                  </span>
+                )}
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setForm({ ...form, imageMobileFile: e.target.files?.[0] || null })}
+                className="w-full px-3 py-2 border rounded bg-white"
+              />
+              {editing?.imagemMobile && (
+                <p className="text-xs text-gray-600 mt-1">
+                  ✅ Imagem mobile atual: {editing.imagemMobile.split('/').pop()?.substring(0, 30)}...
+                </p>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                💡 Se não enviar imagem mobile, será usada a imagem desktop em todos os dispositivos
+              </p>
+            </div>
+            
+            {editing && <p className="text-sm text-gray-500">Deixe os campos vazios para manter as imagens atuais</p>}
 
             <div className="flex gap-4">
               <button 

@@ -54,7 +54,8 @@ export interface News {
 
 export interface CarouselImage {
   id?: string;
-  imageUrl: string;
+  imageUrl: string; // Imagem para desktop
+  imageUrlMobile?: string; // Imagem para mobile (opcional)
   title: string;
   order: number;
   active: boolean;
@@ -432,7 +433,8 @@ export interface Banner {
   id?: string;
   titulo: string;
   link: string;
-  imagem: string;
+  imagem: string; // Imagem para desktop
+  imagemMobile?: string; // Imagem para mobile (opcional)
   ativo: boolean;
   ordem: number;
   tamanho: 'grande' | 'pequeno';
@@ -466,6 +468,7 @@ export const getBanners = async (): Promise<Banner[]> => {
         titulo: data.titulo || '',
         link: data.link || '',
         imagem: data.imagem || '',
+        imagemMobile: data.imagemMobile || undefined,
         ativo: data.ativo ?? true,
         ordem: data.ordem || 0,
         tamanho: data.tamanho || 'pequeno',

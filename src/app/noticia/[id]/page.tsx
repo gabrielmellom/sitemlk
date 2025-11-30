@@ -38,7 +38,7 @@ export default function NoticiaPage() {
     <>
       <Header />
 
-      <article className="container mx-auto px-4 py-8 max-w-4xl">
+      <article className="container mx-auto px-4 py-8 max-w-4xl mt-24">
         <span className="text-blue-600 font-semibold uppercase">{news.category}</span>
 
         <h1 className="text-4xl font-bold mt-2 mb-4">{news.title}</h1>
@@ -55,7 +55,7 @@ export default function NoticiaPage() {
         </div>
 
         <div
-          className="prose max-w-none"
+          className="prose max-w-none text-gray-800 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: safeHtml }}
         />
 

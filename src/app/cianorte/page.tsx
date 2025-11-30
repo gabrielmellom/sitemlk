@@ -5,11 +5,24 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import Social from '@/components/socialmidiamassa';
+import BannersSection from '@/components/BannersSection';
+import { getBanners } from '@/lib/firebase';
 
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 
 // Se quiser, mova para .env.local como NEXT_PUBLIC_MASSA_STREAM
 const STREAM_URL = 'https://stm01.virtualcast.com.br:8148/massacianorte';
+
+interface Banner {
+  id?: string;
+  titulo: string;
+  link: string;
+  imagem: string;
+  imagemMobile?: string;
+  ativo: boolean;
+  ordem: number;
+  tamanho: 'grande' | 'pequeno';
+}
 
 export default function MassaFMPage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -21,6 +34,8 @@ export default function MassaFMPage() {
     return saved ? Number(saved) : 0.85;
   });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [loadingBanners, setLoadingBanners] = useState(true);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -32,6 +47,21 @@ export default function MassaFMPage() {
       localStorage.setItem('massafm_volume', String(volume));
     }
   }, [volume]);
+
+  useEffect(() => {
+    const loadBanners = async () => {
+      setLoadingBanners(true);
+      try {
+        const bannersData = await getBanners();
+        setBanners(bannersData);
+      } catch (error) {
+        console.error('Erro ao carregar banners:', error);
+      } finally {
+        setLoadingBanners(false);
+      }
+    };
+    loadBanners();
+  }, []);
 
   const togglePlay = async () => {
     const el = audioRef.current;
@@ -75,19 +105,18 @@ export default function MassaFMPage() {
         </section>
 
         {/* Título */}
-        {/* Player + iframe lado a lado (alturas iguais) */}
         <section className="container mx-auto px-6 pb-12">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-extrabold mt-4 text-purple-700">
-              Massa FM 96.9 — ao vivo
+              Massa FM Cianorte 96.9 — ao vivo
             </h1>
-            <p className="text-gray-600 mt-2">#TemCoisaBoa — 24 horas no ar 🟠🟣</p>
+            <p className="text-gray-600 mt-2">#Aminha rádio é massa — 24 horas no ar 🟠🟣</p>
           </div>
 
           {/* 🔧 items-stretch força as colunas a igualarem a altura da mais alta */}
           <div className="grid md:grid-cols-2 gap-8 items-stretch">
-            {/* Player custom (ESQUERDA) */}
-            <div className="max-w-xl md:max-w-none mx-auto w-full h-full">
+              {/* Player custom (ESQUERDA) */}
+              <div className="max-w-xl md:max-w-none mx-auto w-full h-full">
               <div className="relative overflow-hidden rounded-3xl bg-white/90 backdrop-blur shadow-xl border border-orange-100 h-full flex flex-col min-h-[420px]">
                 <div className="grid md:grid-cols-[200px,1fr] flex-1">
                   {/* equalizer */}
@@ -103,7 +132,7 @@ export default function MassaFMPage() {
                   {/* controles */}
                   <div className="p-6 md:p-8">
                     <div className="mb-6">
-                      <h2 className="text-xl font-semibold text-gray-900">Massa FM 96.9</h2>
+                      <h2 className="text-xl font-semibold text-gray-900">Massa FM Cianorte 96.9</h2>
                       <p className="text-sm text-gray-600">Tocando agora: programação ao vivo</p>
                     </div>
 
@@ -150,17 +179,13 @@ export default function MassaFMPage() {
             </div>
 
             {/* Player embed (DIREITA) */}
-            {/* Player embed (DIREITA) — sem overflow-hidden no card */}
             <div className="w-full h-full">
               <div className="rounded-3xl bg-white shadow-xl border border-purple-200 h-full flex flex-col min-h-[420px]">
-
-
-                {/* wrapper responsivo com “respiro” no fundo */}
                 <div className="relative w-full px-4 pb-2 flex-1 flex items-stretch">
-                  <div className="relative w-full pt-[56.25%]"> {/* 16:9 */}
+                  <div className="relative w-full pt-[56.25%]">
                     <iframe
                       title="Massa FM - Player"
-                      src="https://wise-stream.mycloudstream.io/player/9stwwxzl?autoplay=true"
+                      src="https://v-us-01.wisestream.io/f10b70fd-d090-4b62-a90a-fd9f4fde1b23.html"
                       className="absolute inset-0 w-full h-full rounded-2xl"  
                       style={{ border: 'none' }}
                       scrolling="no"
@@ -169,7 +194,6 @@ export default function MassaFMPage() {
                     />
                   </div>
                 </div>
-
                 <p className="text-xs text-gray-500 text-center py-2">
                   Se não iniciar, verifique o bloqueio de autoplay.
                 </p>
@@ -178,10 +202,16 @@ export default function MassaFMPage() {
           </div>
         </section>
 
+        {/* Seção de Banners */}
+        <BannersSection 
+          banners={banners}
+          loading={loadingBanners}
+        />
+
       </main>
 
       <footer className="bg-[#FF9400] text-white py-6 text-center text-sm">
-        © {new Date().getFullYear()} Massa FM 96.9 — Grupo MLK.
+        © {new Date().getFullYear()} Massa FM Cianorte 96.9 — Grupo MLK.
       </footer>
 
       {/* animação equalizer */}
