@@ -109,7 +109,7 @@ export default function MassaFMPage() {
             <h1 className="text-3xl md:text-4xl font-extrabold mt-4 text-purple-700">
               Massa FM Paranavaí 88.7
             </h1>
-            <p className="text-gray-600 mt-2 text-lg">#Aminha rádio é massa — 24 horas no ar 🟠🟣</p>
+            <p className="text-gray-600 mt-2 text-lg">#A minha rádio é massa — 24 horas no ar 🟠🟣</p>
           </div>
         </section>
 
@@ -151,7 +151,7 @@ export default function MassaFMPage() {
                 <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                   <iframe
                     title="Massa FM Paranavaí"
-                    src="https://v-us-01.wisestream.io/9a10d498-4684-4b54-bf97-9c7a8a47b1ff.html"
+                    src="https://v-us-01.wisestream.io/8ee63585-c6f5-4cee-a90c-f595a8097f52.html"
                     className="absolute inset-0 w-full h-full"
                     style={{ border: 'none' }}
                     scrolling="no"
@@ -309,7 +309,7 @@ export default function MassaFMPage() {
                     <div className="relative w-full pt-[56.25%]">
                       <iframe
                         title="Massa FM Paranavaí"
-                        src="https://v-us-01.wisestream.io/9a10d498-4684-4b54-bf97-9c7a8a47b1ff.html"
+                        src="https://v-us-01.wisestream.io/8ee63585-c6f5-4cee-a90c-f595a8097f52.html"
                         className="absolute inset-0 w-full h-full rounded-2xl"  
                         style={{ border: 'none' }}
                         scrolling="no"
