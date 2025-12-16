@@ -110,7 +110,7 @@ export default function MassaFMPage() {
             <h1 className="text-3xl md:text-4xl font-extrabold mt-4 text-purple-700">
               Massa FM Cianorte 96.9 — ao vivo
             </h1>
-            <p className="text-gray-600 mt-2">#A minha rádio é massa — 24 horas no ar 🟠🟣</p>
+            <p className="text-gray-600 mt-2">#A minha rádio é massa — 24 horas no ar! 🟠🟣</p>
           </div>
 
           {/* 🔧 items-stretch força as colunas a igualarem a altura da mais alta */}
